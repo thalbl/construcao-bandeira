@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,6 +23,7 @@
             width: 100%;
         }
         h1 { font-size: 22px; color: #2c3e50; margin-top: 0; }
+        h2 { font-size: 18px; color: #2c3e50; border-bottom: 2px solid #eef2f3; padding-bottom: 5px; }
         .instructions {
             background: #e8f4fd;
             padding: 10px 15px;
@@ -67,6 +68,15 @@
             grid-template-columns: 1fr 1fr;
             gap: 5px;
         }
+        .paper-guide {
+            margin-top: 30px;
+            background: #fff9e6;
+            padding: 15px 20px;
+            border-left: 4px solid #f1c40f;
+            border-radius: 4px;
+        }
+        .paper-guide ul { margin-top: 5px; padding-left: 20px; }
+        .paper-guide li { margin-bottom: 8px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -75,9 +85,9 @@
         <h1>Terreno da Escola - Ajuste de P e Q</h1>
         
         <div class="instructions">
-            <strong>Como usar:</strong> <br>
-            1. Clique e <strong>arraste os pontos P e Q</strong> com o rato para os alinhar exatamente como aparecem na sua folha.<br>
-            2. Use o controlador abaixo para definir a distância real (em mm) que mediu com a régua entre P e Q na sua folha.
+            <strong>Como usar o simulador:</strong> <br>
+            1. Clique e <strong>arraste os pontos P e Q</strong> com o mouse para alinhá-los exatamente como aparecem na sua folha impressa.<br>
+            2. Use o controle deslizante abaixo para definir a distância real (em milímetros) que você mediu com a régua entre P e Q no seu papel.
         </div>
 
         <div class="controls">
@@ -98,6 +108,29 @@
         </div>
 
         <div class="status-list" id="statusList"></div>
+
+        <div class="paper-guide">
+            <h2>📐 Como fazer isso no papel real?</h2>
+            <p>Depois de fazer as construções geométricas descritas no problema (ou usar os valores calculados), siga estes passos para marcar as bandeiras no papel da prova:</p>
+            
+            <strong>1. Valores calculados (Aproximados em milímetros):</strong>
+            <ul>
+                <li><strong>Bandeira Magenta:</strong> x = 105 mm | y = 65,5 mm</li>
+                <li><strong>Bandeira Azul:</strong> x = 45,8 mm | y = 70 mm</li>
+                <li><strong>Bandeira Roxa 1:</strong> x = 73,1 mm | y = 21,9 mm</li>
+                <li><strong>Bandeira Roxa 2:</strong> x = 21,9 mm | y = 73,1 mm</li>
+                <li><strong>Bandeira Verde:</strong> x = 93,5 mm | y = 38,5 mm</li>
+            </ul>
+
+            <strong>2. Utilizando o Compasso:</strong>
+            <ul>
+                <li>Pegue a sua régua e <strong>abra o compasso</strong> até que a distância entre a ponta seca (metal) e a ponta do grafite seja exatamente o valor de <strong>x</strong> da bandeira que você quer marcar.</li>
+                <li>Fure o papel colocando a ponta seca exatamente em cima do ponto <strong>P</strong>. Faça um arco leve na área do terreno.</li>
+                <li>Agora, abra o compasso com o valor de <strong>y</strong> da mesma bandeira.</li>
+                <li>Fure o papel com a ponta seca em cima do ponto <strong>Q</strong> e faça outro arco, de modo que ele cruze o primeiro arco que você desenhou.</li>
+                <li>O ponto exato onde as duas linhas de grafite formam um "X" é onde você deve desenhar o ponto da bandeira! Repita o processo para as 5 opções.</li>
+            </ul>
+        </div>
     </div>
 
     <script>
@@ -118,20 +151,20 @@
         const a = 60, b = 35, c = 20;
 
         // Cálculos estáticos dos raios (em mm) baseados nas equações
-        const x_M = (a * b) / c;                     // 105 mm
-        const y_M = (a * a) / (c + b);               // 65.45 mm
+        const x_M = (a * b) / c;                     
+        const y_M = (a * a) / (c + b);               
 
-        const x_A = Math.sqrt(a * b);                // 45.83 mm
-        const y_A = (b * c) / (2 * b - a);           // 70 mm
+        const x_A = Math.sqrt(a * b);                
+        const y_A = (b * c) / (2 * b - a);           
 
-        const delta_R = Math.pow(95, 2) - 4 * 1600;  // 2625
-        const x_R1 = (95 + Math.sqrt(delta_R)) / 2;  // 73.12 mm
-        const y_R1 = (95 - Math.sqrt(delta_R)) / 2;  // 21.88 mm
+        const delta_R = Math.pow(95, 2) - 4 * 1600;  
+        const x_R1 = (95 + Math.sqrt(delta_R)) / 2;  
+        const y_R1 = (95 - Math.sqrt(delta_R)) / 2;  
         const x_R2 = y_R1, y_R2 = x_R1;
 
-        const delta_V = Math.pow(55, 2) - 4 * (-3600); // 17425
-        const y_V = (-55 + Math.sqrt(delta_V)) / 2;  // 38.50 mm
-        const x_V = y_V + 55;                        // 93.50 mm
+        const delta_V = Math.pow(55, 2) - 4 * (-3600); 
+        const y_V = (-55 + Math.sqrt(delta_V)) / 2;  
+        const x_V = y_V + 55;                        
 
         const flags = [
             { name: 'Bandeira Magenta (M)', x: x_M, y: y_M, color: 'magenta' },
@@ -193,11 +226,11 @@
                     // Escolhe o ponto que fica voltado para dentro/cima do terreno
                     let pt = pts[0].y < pts[1].y ? pts[0] : pts[1];
 
-                    // Desenhar finos arcos auxiliares (linhas do compasso)
+                    // Desenhar linhas do compasso MAIS ESCURAS
                     ctx.beginPath();
                     ctx.arc(P.x, P.y, r0, 0, 2 * Math.PI);
-                    ctx.strokeStyle = "rgba(0,0,0,0.03)";
-                    ctx.lineWidth = 1;
+                    ctx.strokeStyle = "rgba(0,0,0,0.18)"; // Arcos mais escuros e visíveis
+                    ctx.lineWidth = 1.5;
                     ctx.stroke();
 
                     ctx.beginPath();
@@ -213,8 +246,8 @@
                     ctx.lineWidth = 1.5;
                     ctx.stroke();
 
-                    ctx.fillStyle = '#333';
-                    ctx.font = 'bold 12px Arial';
+                    ctx.fillStyle = '#111';
+                    ctx.font = 'bold 13px Arial';
                     ctx.fillText(flag.name.split(' ')[1], pt.x + 10, pt.y + 4);
 
                     statusList.innerHTML += `<div>🟢 ${flag.name}: Calculada com sucesso.</div>`;
@@ -223,7 +256,7 @@
                 }
             });
 
-            // 4. Desenhar os pontos de controlo P e Q por cima de tudo
+            // 4. Desenhar os pontos de controle P e Q por cima de tudo
             drawControlPoint(P, 'P', '#ff3333');
             drawControlPoint(Q, 'Q', '#3333ff');
         }
@@ -261,12 +294,10 @@
             const mouse = getMousePos(e);
             
             if (dragTarget) {
-                // Prender o ponto dentro dos limites do canvas com alguma margem
                 dragTarget.x = Math.max(10, Math.min(canvas.width - 10, mouse.x));
                 dragTarget.y = Math.max(10, Math.min(canvas.height - 10, mouse.y));
                 draw();
             } else {
-                // Mudar o cursor para indicar que é clicável
                 if (Math.hypot(mouse.x - P.x, mouse.y - P.y) < 15 || Math.hypot(mouse.x - Q.x, mouse.y - Q.y) < 15) {
                     canvas.style.cursor = 'pointer';
                 } else {

@@ -1,123 +1,161 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gincana Matemática - Mapa das Bandeiras</title>
+    <title>Gincana Matemática - Mapa Dinâmico</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef2f3;
             color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
         }
-        h1 { font-size: 24px; color: #2c3e50; }
         .container {
             background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            max-width: 850px;
+            width: 100%;
+        }
+        h1 { font-size: 22px; color: #2c3e50; margin-top: 0; }
+        .instructions {
+            background: #e8f4fd;
+            padding: 10px 15px;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
             margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .controls {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
         }
         canvas {
-            border: 2px solid #000;
-            background-color: #fff;
-            cursor: crosshair;
+            border: 1px solid #ccc;
+            background-color: #fafafa;
+            border-radius: 4px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
         .legend {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             margin-top: 15px;
             flex-wrap: wrap;
             justify-content: center;
+            font-size: 14px;
         }
         .legend-item { display: flex; align-items: center; font-weight: bold; }
         .dot {
-            width: 12px; height: 12px; border-radius: 50%; margin-right: 5px;
+            width: 12px; height: 12px; border-radius: 50%; margin-right: 6px;
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+        .status-list {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #666;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Terreno da Escola - Posição das Bandeiras</h1>
-        <p>Distância simulada entre P e Q ajustada para validar todas as interseções.</p>
+        <h1>Terreno da Escola - Ajuste de P e Q</h1>
+        
+        <div class="instructions">
+            <strong>Como usar:</strong> <br>
+            1. Clique e <strong>arraste os pontos P e Q</strong> com o rato para os alinhar exatamente como aparecem na sua folha.<br>
+            2. Use o controlador abaixo para definir a distância real (em mm) que mediu com a régua entre P e Q na sua folha.
+        </div>
+
+        <div class="controls">
+            <label for="distanceSlider"><strong>Distância real P-Q medida na folha:</strong></label>
+            <input type="range" id="distanceSlider" min="56" max="94" value="75" step="1">
+            <span id="distanceValue" style="font-weight: bold; color: #2c3e50;">75 mm</span>
+        </div>
+
         <canvas id="terreno" width="800" height="500"></canvas>
         
         <div class="legend">
-            <div class="legend-item"><div class="dot" style="background: black;"></div>P e Q</div>
+            <div class="legend-item"><div class="dot" style="background: #ff3333;"></div>Ponto P (Arrastável)</div>
+            <div class="legend-item"><div class="dot" style="background: #3333ff;"></div>Ponto Q (Arrastável)</div>
             <div class="legend-item"><div class="dot" style="background: magenta;"></div>Magenta (M)</div>
-            <div class="legend-item"><div class="dot" style="background: blue;"></div>Azul (A)</div>
+            <div class="legend-item"><div class="dot" style="background: #1e90ff;"></div>Azul (A)</div>
             <div class="legend-item"><div class="dot" style="background: purple;"></div>Roxa (R1 e R2)</div>
             <div class="legend-item"><div class="dot" style="background: green;"></div>Verde (V)</div>
         </div>
+
+        <div class="status-list" id="statusList"></div>
     </div>
 
     <script>
         const canvas = document.getElementById('terreno');
         const ctx = canvas.getContext('2d');
+        const slider = document.getElementById('distanceSlider');
+        const sliderVal = document.getElementById('distanceValue');
+        const statusList = document.getElementById('statusList');
 
-        // Escala: 1mm = 5 pixels (para ficar visível na tela)
-        const scale = 5;
+        // Posições iniciais aproximadas dentro do retângulo simulado
+        const P = { x: 280, y: 300 };
+        const Q = { x: 520, y: 380 };
+        
+        // Definição geométrica do retângulo do "Terreno da escola"
+        const terrainBox = { x: 60, y: 60, width: 680, height: 380 };
 
-        // Posições de P e Q no canvas (simulando a inclinação do papel)
-        const P = { x: 250, y: 350 };
-        const Q = { x: 600, y: 400 };
-
-        // Distância entre P e Q no canvas
-        const d_px = Math.sqrt(Math.pow(Q.x - P.x, 2) + Math.pow(Q.y - P.y, 2));
-        const d_mm = d_px / scale; 
-
-        // Valores base em mm
+        // Valores matemáticos do enunciado (em mm)
         const a = 60, b = 35, c = 20;
 
-        // --- CÁLCULO DOS VALORES DE X E Y (em mm) ---
-        // 1. Magenta
-        const x_M = (a * b) / c;
-        const y_M = (a * a) / (c + b);
+        // Cálculos estáticos dos raios (em mm) baseados nas equações
+        const x_M = (a * b) / c;                     // 105 mm
+        const y_M = (a * a) / (c + b);               // 65.45 mm
 
-        // 2. Azul
-        const x_A = Math.sqrt(a * b);
-        const y_A = (b * c) / (2 * b - a);
+        const x_A = Math.sqrt(a * b);                // 45.83 mm
+        const y_A = (b * c) / (2 * b - a);           // 70 mm
 
-        // 3. Roxa (Bhaskara: z^2 - 95z + 1600 = 0)
-        // x+y = 95; sqrt(x*y) = 40 => x*y = 1600
-        const delta_R = Math.pow(95, 2) - 4 * 1600;
-        const R_sol1 = (95 + Math.sqrt(delta_R)) / 2;
-        const R_sol2 = (95 - Math.sqrt(delta_R)) / 2;
-        const x_R1 = R_sol1, y_R1 = R_sol2; // Bandeira Roxa 1
-        const x_R2 = R_sol2, y_R2 = R_sol1; // Bandeira Roxa 2
+        const delta_R = Math.pow(95, 2) - 4 * 1600;  // 2625
+        const x_R1 = (95 + Math.sqrt(delta_R)) / 2;  // 73.12 mm
+        const y_R1 = (95 - Math.sqrt(delta_R)) / 2;  // 21.88 mm
+        const x_R2 = y_R1, y_R2 = x_R1;
 
-        // 4. Verde (Bhaskara: y^2 + 55y - 3600 = 0)
-        // x-y = 55 => x = y+55; sqrt(x*y) = 60 => x*y = 3600
-        const delta_V = Math.pow(55, 2) - 4 * (-3600);
-        const y_V = (-55 + Math.sqrt(delta_V)) / 2;
-        const x_V = y_V + 55;
+        const delta_V = Math.pow(55, 2) - 4 * (-3600); // 17425
+        const y_V = (-55 + Math.sqrt(delta_V)) / 2;  // 38.50 mm
+        const x_V = y_V + 55;                        // 93.50 mm
 
-        // Lista de bandeiras para desenhar
         const flags = [
-            { name: 'M', x: x_M, y: y_M, color: 'magenta' },
-            { name: 'A', x: x_A, y: y_A, color: 'blue' },
-            { name: 'R1', x: x_R1, y: y_R1, color: 'purple' },
-            { name: 'R2', x: x_R2, y: y_R2, color: 'purple' },
-            { name: 'V', x: x_V, y: y_V, color: 'green' }
+            { name: 'Bandeira Magenta (M)', x: x_M, y: y_M, color: 'magenta' },
+            { name: 'Bandeira Azul (A)', x: x_A, y: y_A, color: '#1e90ff' },
+            { name: 'Bandeira Roxa (R1)', x: x_R1, y: y_R1, color: 'purple' },
+            { name: 'Bandeira Roxa (R2)', x: x_R2, y: y_R2, color: 'purple' },
+            { name: 'Bandeira Verde (V)', x: x_V, y: y_V, color: 'green' }
         ];
 
-        // Função para encontrar interseção de 2 círculos
+        let dragTarget = null;
+
+        // Interseção de duas circunferências
         function findIntersections(x0, y0, r0, x1, y1, r1) {
             let dx = x1 - x0;
             let dy = y1 - y0;
             let d = Math.sqrt((dy*dy) + (dx*dx));
-
-            if (d > (r0 + r1) || d < Math.abs(r0 - r1) || d === 0) return null; // Não há interseção
+            if (d > (r0 + r1) || d < Math.abs(r0 - r1) || d === 0) return null;
 
             let a = ((r0*r0) - (r1*r1) + (d*d)) / (2.0 * d);
             let x2 = x0 + (dx * a/d);
             let y2 = y0 + (dy * a/d);
-            let h = Math.sqrt((r0*r0) - (a*a));
+            let hSq = (r0*r0) - (a*a);
+            if (hSq < 0) return null;
+            let h = Math.sqrt(hSq);
             let rx = -dy * (h/d);
             let ry = dx * (h/d);
 
@@ -127,46 +165,126 @@
             ];
         }
 
-        // Desenhar P e Q
-        function drawPoint(pt, label, color) {
-            ctx.beginPath();
-            ctx.arc(pt.x, pt.y, 5, 0, 2 * Math.PI);
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.fillStyle = "#000";
-            ctx.font = "16px Arial";
-            ctx.fillText(label, pt.x + 10, pt.y + 10);
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Desenhar a caixa do Terreno da Escola
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(terrainBox.x, terrainBox.y, terrainBox.width, terrainBox.height);
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('Terreno da escola', terrainBox.x + 15, terrainBox.y + 25);
+
+            // 2. Calcular a escala dinâmica (pixels por mm)
+            const d_px = Math.hypot(Q.x - P.x, Q.y - P.y);
+            const d_mm = parseFloat(slider.value);
+            const scale = d_px / d_mm;
+
+            statusList.innerHTML = ''; // Limpar texto de status
+
+            // 3. Processar e desenhar cada bandeira
+            flags.forEach(flag => {
+                let r0 = flag.x * scale;
+                let r1 = flag.y * scale;
+                let pts = findIntersections(P.x, P.y, r0, Q.x, Q.y, r1);
+                
+                if (pts) {
+                    // Escolhe o ponto que fica voltado para dentro/cima do terreno
+                    let pt = pts[0].y < pts[1].y ? pts[0] : pts[1];
+
+                    // Desenhar finos arcos auxiliares (linhas do compasso)
+                    ctx.beginPath();
+                    ctx.arc(P.x, P.y, r0, 0, 2 * Math.PI);
+                    ctx.strokeStyle = "rgba(0,0,0,0.03)";
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.arc(Q.x, Q.y, r1, 0, 2 * Math.PI);
+                    ctx.stroke();
+
+                    // Desenhar o ponto da bandeira
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 6, 0, 2 * Math.PI);
+                    ctx.fillStyle = flag.color;
+                    ctx.fill();
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#333';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.fillText(flag.name.split(' ')[1], pt.x + 10, pt.y + 4);
+
+                    statusList.innerHTML += `<div>🟢 ${flag.name}: Calculada com sucesso.</div>`;
+                } else {
+                    statusList.innerHTML += `<div style="color: red;">❌ ${flag.name}: Distância P-Q incompatível para cruzamento.</div>`;
+                }
+            });
+
+            // 4. Desenhar os pontos de controlo P e Q por cima de tudo
+            drawControlPoint(P, 'P', '#ff3333');
+            drawControlPoint(Q, 'Q', '#3333ff');
         }
 
-        drawPoint(P, 'P', 'black');
-        drawPoint(Q, 'Q', 'black');
+        function drawControlPoint(pt, label, color) {
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, 8, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
 
-        // Desenhar Bandeiras
-        flags.forEach(flag => {
-            let r0 = flag.x * scale;
-            let r1 = flag.y * scale;
-            let pts = findIntersections(P.x, P.y, r0, Q.x, Q.y, r1);
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText(label, pt.x - 5, pt.y - 14);
+        }
+
+        // --- SISTEMA DE ARRASTAR E LARGAR (MOUSE EVENTS) ---
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const mouse = getMousePos(e);
+            if (Math.hypot(mouse.x - P.x, mouse.y - P.y) < 15) dragTarget = P;
+            else if (Math.hypot(mouse.x - Q.x, mouse.y - Q.y) < 15) dragTarget = Q;
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            const mouse = getMousePos(e);
             
-            if (pts) {
-                // Seleciona o ponto que fica "para cima" no papel (menor Y no canvas)
-                let pt = pts[0].y < pts[1].y ? pts[0] : pts[1];
-                
-                // Desenhar arcos guias
-                ctx.beginPath();
-                ctx.arc(P.x, P.y, r0, 0, 2 * Math.PI);
-                ctx.strokeStyle = "rgba(0,0,0,0.05)";
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.arc(Q.x, Q.y, r1, 0, 2 * Math.PI);
-                ctx.stroke();
-
-                // Desenhar o ponto da bandeira
-                drawPoint(pt, flag.name, flag.color);
+            if (dragTarget) {
+                // Prender o ponto dentro dos limites do canvas com alguma margem
+                dragTarget.x = Math.max(10, Math.min(canvas.width - 10, mouse.x));
+                dragTarget.y = Math.max(10, Math.min(canvas.height - 10, mouse.y));
+                draw();
             } else {
-                console.log(`Bandeira ${flag.name} não faz interseção no plano (Escala ou distância PQ incorreta).`);
+                // Mudar o cursor para indicar que é clicável
+                if (Math.hypot(mouse.x - P.x, mouse.y - P.y) < 15 || Math.hypot(mouse.x - Q.x, mouse.y - Q.y) < 15) {
+                    canvas.style.cursor = 'pointer';
+                } else {
+                    canvas.style.cursor = 'default';
+                }
             }
         });
+
+        canvas.addEventListener('mouseup', () => dragTarget = null);
+        canvas.addEventListener('mouseleave', () => dragTarget = null);
+        
+        slider.addEventListener('input', () => {
+            sliderVal.textContent = slider.value + ' mm';
+            draw();
+        });
+
+        // Inicializar o desenho
+        draw();
     </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gincana Matemática - Mapa Dinâmico</title>
+    <title>1ª Questão - Mapa Dinâmico</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -46,6 +46,7 @@
             background-color: #fafafa;
             border-radius: 4px;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            cursor: default;
         }
         .legend {
             display: flex;
@@ -62,11 +63,10 @@
         }
         .status-list {
             margin-top: 15px;
-            font-size: 13px;
+            font-size: 14px;
             color: #666;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 5px;
+            font-weight: bold;
+            text-align: center;
         }
         .paper-guide {
             margin-top: 30px;
@@ -82,53 +82,50 @@
 <body>
 
     <div class="container">
-        <h1>Terreno da Escola - Ajuste de P e Q</h1>
+        <h1>Construção do Triângulo ABC (1ª Questão)</h1>
         
         <div class="instructions">
             <strong>Como usar o simulador:</strong> <br>
-            1. Clique e <strong>arraste os pontos P e Q</strong> com o mouse para alinhá-los exatamente como aparecem na sua folha impressa.<br>
-            2. Use o controle deslizante abaixo para definir a distância real (em milímetros) que você mediu com a régua entre P e Q no seu papel.
+            1. Clique e <strong>arraste os pontos A e B</strong> para reposicionar e dimensionar a base. A distância visual no Canvas vai se ajustar, mas matematicamente ela representará fixamente os <strong>65 mm</strong> (d) do problema.<br>
+            2. Use o controle deslizante abaixo para variar a <strong>medida da altura (h)</strong> e ver, em tempo real, como as tangentes afetam a existência de soluções.
         </div>
 
         <div class="controls">
-            <label for="distanceSlider"><strong>Distância real P-Q medida na folha:</strong></label>
-            <input type="range" id="distanceSlider" min="56" max="94" value="75" step="1">
-            <span id="distanceValue" style="font-weight: bold; color: #2c3e50;">75 mm</span>
+            <label for="heightSlider"><strong>Altura relativa a A (h):</strong></label>
+            <input type="range" id="heightSlider" min="10" max="64" value="45" step="1">
+            <span id="heightValue" style="font-weight: bold; color: #2c3e50;">45 mm</span>
         </div>
 
         <canvas id="terreno" width="800" height="500"></canvas>
         
         <div class="legend">
-            <div class="legend-item"><div class="dot" style="background: #ff3333;"></div>Ponto P (Arrastável)</div>
-            <div class="legend-item"><div class="dot" style="background: #3333ff;"></div>Ponto Q (Arrastável)</div>
-            <div class="legend-item"><div class="dot" style="background: magenta;"></div>Magenta (M)</div>
-            <div class="legend-item"><div class="dot" style="background: #1e90ff;"></div>Azul (A)</div>
-            <div class="legend-item"><div class="dot" style="background: purple;"></div>Roxa (R1 e R2)</div>
-            <div class="legend-item"><div class="dot" style="background: green;"></div>Verde (V)</div>
+            <div class="legend-item"><div class="dot" style="background: #333;"></div>Base A-B</div>
+            <div class="legend-item"><div class="dot" style="background: rgba(31, 119, 180, 0.2); border: 2px solid #1f77b4;"></div>Círculo de Apolônio (1º LG)</div>
+            <div class="legend-item"><div class="dot" style="background: transparent; border: 2px dashed gray;"></div>Altura Auxiliar (h)</div>
+            <div class="legend-item"><div class="dot" style="background: #ff7f0e;"></div>Retas Tangentes (2º LG)</div>
+            <div class="legend-item"><div class="dot" style="background: red;"></div>Vértices C</div>
         </div>
 
         <div class="status-list" id="statusList"></div>
 
         <div class="paper-guide">
             <h2>📐 Como fazer isso no papel real?</h2>
-            <p>Depois de fazer as construções geométricas descritas no problema (ou usar os valores calculados), siga estes passos para marcar as bandeiras no papel da prova:</p>
+            <p>Para desenhar a 1ª Questão com perfeição na sua prova usando régua e compasso, sem os cifrões de fórmula, siga estes passos:</p>
             
-            <strong>1. Valores calculados (Aproximados em milímetros):</strong>
+            <strong>1. Análise dos Lugares Geométricos (LLGG):</strong>
             <ul>
-                <li><strong>Bandeira Magenta:</strong> x = 105 mm | y = 65,5 mm</li>
-                <li><strong>Bandeira Azul:</strong> x = 45,8 mm | y = 70 mm</li>
-                <li><strong>Bandeira Roxa 1:</strong> x = 73,1 mm | y = 21,9 mm</li>
-                <li><strong>Bandeira Roxa 2:</strong> x = 21,9 mm | y = 73,1 mm</li>
-                <li><strong>Bandeira Verde:</strong> x = 93,5 mm | y = 38,5 mm</li>
+                <li><strong>1º LG:</strong> Círculo de Apolônio do segmento AB na razão 2 para 1, pois a distância do vértice C até A é o dobro da distância de C até B (ou seja, <strong>CA / CB = 2</strong>).</li>
+                <li><strong>2º LG:</strong> A reta de base BC dista de A exatamente a medida da altura. Logo, o 2º lugar geométrico é formado por retas que passam por B e são tangentes a uma circunferência de centro A e raio igual a <strong>45 mm</strong>.</li>
             </ul>
 
-            <strong>2. Utilizando o Compasso:</strong>
+            <strong>2. Execução Passo a Passo:</strong>
             <ul>
-                <li>Pegue a sua régua e <strong>abra o compasso</strong> até que a distância entre a ponta seca (metal) e a ponta do grafite seja exatamente o valor de <strong>x</strong> da bandeira que você quer marcar.</li>
-                <li>Fure o papel colocando a ponta seca exatamente em cima do ponto <strong>P</strong>. Faça um arco leve na área do terreno.</li>
-                <li>Agora, abra o compasso com o valor de <strong>y</strong> da mesma bandeira.</li>
-                <li>Fure o papel com a ponta seca em cima do ponto <strong>Q</strong> e faça outro arco, de modo que ele cruze o primeiro arco que você desenhou.</li>
-                <li>O ponto exato onde as duas linhas de grafite formam um "X" é onde você deve desenhar o ponto da bandeira! Repita o processo para as 5 opções.</li>
+                <li>Trace uma linha horizontal de apoio e marque nela o segmento <strong>AB com 65 mm</strong> usando sua régua.</li>
+                <li><strong>Para o Círculo de Apolônio:</strong> Trace duas retas paralelas auxiliares quaisquer cruzando os pontos A e B. Na paralela que cruza A, marque 2 unidades com o compasso para cima e para baixo. Na de B, marque 1 unidade. Ligue as marcações para encontrar, sobre a reta AB, os pontos conjugados harmônicos M1 (interno) e M2 (externo). Encontre o meio do traço entre M1 e M2 e trace a circunferência.</li>
+                <li><strong>Para o Círculo de Altura e Tangentes:</strong> Coloque a ponta seca em A e desenhe um círculo leve com o compasso aberto em exatos <strong>45 mm</strong>.</li>
+                <li>Para fazer a tangente correta: marque o meio do segmento AB (32,5 mm) e, fazendo centro nele, trace um arco que vai de A até encostar na borda da circunferência de 45 mm, achando os dois pontos de tangência (T1 e T2).</li>
+                <li>Com a régua, parta de B e faça duas retas longas atravessando os pontos T1 e T2.</li>
+                <li><strong>A Solução:</strong> Onde essas duas retas cortarem o Círculo de Apolônio será o lugar do seu Vértice C. O desenho gerará 4 pontos (C1, C2, C3 e C4). Feche um dos triângulos.</li>
             </ul>
         </div>
     </div>
@@ -136,146 +133,16 @@
     <script>
         const canvas = document.getElementById('terreno');
         const ctx = canvas.getContext('2d');
-        const slider = document.getElementById('distanceSlider');
-        const sliderVal = document.getElementById('distanceValue');
+        const slider = document.getElementById('heightSlider');
+        const sliderVal = document.getElementById('heightValue');
         const statusList = document.getElementById('statusList');
 
-        // Posições iniciais aproximadas dentro do retângulo simulado
-        const P = { x: 280, y: 300 };
-        const Q = { x: 520, y: 380 };
-        
-        // Definição geométrica do retângulo do "Terreno da escola"
-        const terrainBox = { x: 60, y: 60, width: 680, height: 380 };
-
-        // Valores matemáticos do enunciado (em mm)
-        const a = 60, b = 35, c = 20;
-
-        // Cálculos estáticos dos raios (em mm) baseados nas equações
-        const x_M = (a * b) / c;                     
-        const y_M = (a * a) / (c + b);               
-
-        const x_A = Math.sqrt(a * b);                
-        const y_A = (b * c) / (2 * b - a);           
-
-        const delta_R = Math.pow(95, 2) - 4 * 1600;  
-        const x_R1 = (95 + Math.sqrt(delta_R)) / 2;  
-        const y_R1 = (95 - Math.sqrt(delta_R)) / 2;  
-        const x_R2 = y_R1, y_R2 = x_R1;
-
-        const delta_V = Math.pow(55, 2) - 4 * (-3600); 
-        const y_V = (-55 + Math.sqrt(delta_V)) / 2;  
-        const x_V = y_V + 55;                        
-
-        const flags = [
-            { name: 'Bandeira Magenta (M)', x: x_M, y: y_M, color: 'magenta' },
-            { name: 'Bandeira Azul (A)', x: x_A, y: y_A, color: '#1e90ff' },
-            { name: 'Bandeira Roxa (R1)', x: x_R1, y: y_R1, color: 'purple' },
-            { name: 'Bandeira Roxa (R2)', x: x_R2, y: y_R2, color: 'purple' },
-            { name: 'Bandeira Verde (V)', x: x_V, y: y_V, color: 'green' }
-        ];
-
+        // Posição inicial da Base AB
+        let A = { x: 220, y: 250 };
+        let B = { x: 500, y: 250 };
         let dragTarget = null;
 
-        // Interseção de duas circunferências
-        function findIntersections(x0, y0, r0, x1, y1, r1) {
-            let dx = x1 - x0;
-            let dy = y1 - y0;
-            let d = Math.sqrt((dy*dy) + (dx*dx));
-            if (d > (r0 + r1) || d < Math.abs(r0 - r1) || d === 0) return null;
-
-            let a = ((r0*r0) - (r1*r1) + (d*d)) / (2.0 * d);
-            let x2 = x0 + (dx * a/d);
-            let y2 = y0 + (dy * a/d);
-            let hSq = (r0*r0) - (a*a);
-            if (hSq < 0) return null;
-            let h = Math.sqrt(hSq);
-            let rx = -dy * (h/d);
-            let ry = dx * (h/d);
-
-            return [
-                { x: x2 + rx, y: y2 + ry },
-                { x: x2 - rx, y: y2 - ry }
-            ];
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 1. Desenhar a caixa do Terreno da Escola
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(terrainBox.x, terrainBox.y, terrainBox.width, terrainBox.height);
-            ctx.fillStyle = '#000';
-            ctx.font = 'bold 14px Arial';
-            ctx.fillText('Terreno da escola', terrainBox.x + 15, terrainBox.y + 25);
-
-            // 2. Calcular a escala dinâmica (pixels por mm)
-            const d_px = Math.hypot(Q.x - P.x, Q.y - P.y);
-            const d_mm = parseFloat(slider.value);
-            const scale = d_px / d_mm;
-
-            statusList.innerHTML = ''; // Limpar texto de status
-
-            // 3. Processar e desenhar cada bandeira
-            flags.forEach(flag => {
-                let r0 = flag.x * scale;
-                let r1 = flag.y * scale;
-                let pts = findIntersections(P.x, P.y, r0, Q.x, Q.y, r1);
-                
-                if (pts) {
-                    // Escolhe o ponto que fica voltado para dentro/cima do terreno
-                    let pt = pts[0].y < pts[1].y ? pts[0] : pts[1];
-
-                    // Desenhar linhas do compasso MAIS ESCURAS
-                    ctx.beginPath();
-                    ctx.arc(P.x, P.y, r0, 0, 2 * Math.PI);
-                    ctx.strokeStyle = "rgba(0,0,0,0.18)"; // Arcos mais escuros e visíveis
-                    ctx.lineWidth = 1.5;
-                    ctx.stroke();
-
-                    ctx.beginPath();
-                    ctx.arc(Q.x, Q.y, r1, 0, 2 * Math.PI);
-                    ctx.stroke();
-
-                    // Desenhar o ponto da bandeira
-                    ctx.beginPath();
-                    ctx.arc(pt.x, pt.y, 6, 0, 2 * Math.PI);
-                    ctx.fillStyle = flag.color;
-                    ctx.fill();
-                    ctx.strokeStyle = '#fff';
-                    ctx.lineWidth = 1.5;
-                    ctx.stroke();
-
-                    ctx.fillStyle = '#111';
-                    ctx.font = 'bold 13px Arial';
-                    ctx.fillText(flag.name.split(' ')[1], pt.x + 10, pt.y + 4);
-
-                    statusList.innerHTML += `<div>🟢 ${flag.name}: Calculada com sucesso.</div>`;
-                } else {
-                    statusList.innerHTML += `<div style="color: red;">❌ ${flag.name}: Distância P-Q incompatível para cruzamento.</div>`;
-                }
-            });
-
-            // 4. Desenhar os pontos de controle P e Q por cima de tudo
-            drawControlPoint(P, 'P', '#ff3333');
-            drawControlPoint(Q, 'Q', '#3333ff');
-        }
-
-        function drawControlPoint(pt, label, color) {
-            ctx.beginPath();
-            ctx.arc(pt.x, pt.y, 8, 0, 2 * Math.PI);
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            ctx.fillStyle = '#000';
-            ctx.font = 'bold 14px Arial';
-            ctx.fillText(label, pt.x - 5, pt.y - 14);
-        }
-
-        // --- SISTEMA DE ARRASTAR E LARGAR (MOUSE EVENTS) ---
+        // --- SISTEMA DE ARRASTE ---
         function getMousePos(e) {
             const rect = canvas.getBoundingClientRect();
             return {
@@ -286,19 +153,18 @@
 
         canvas.addEventListener('mousedown', (e) => {
             const mouse = getMousePos(e);
-            if (Math.hypot(mouse.x - P.x, mouse.y - P.y) < 15) dragTarget = P;
-            else if (Math.hypot(mouse.x - Q.x, mouse.y - Q.y) < 15) dragTarget = Q;
+            if (Math.hypot(mouse.x - A.x, mouse.y - A.y) < 15) dragTarget = A;
+            else if (Math.hypot(mouse.x - B.x, mouse.y - B.y) < 15) dragTarget = B;
         });
 
         canvas.addEventListener('mousemove', (e) => {
             const mouse = getMousePos(e);
-            
             if (dragTarget) {
                 dragTarget.x = Math.max(10, Math.min(canvas.width - 10, mouse.x));
                 dragTarget.y = Math.max(10, Math.min(canvas.height - 10, mouse.y));
                 draw();
             } else {
-                if (Math.hypot(mouse.x - P.x, mouse.y - P.y) < 15 || Math.hypot(mouse.x - Q.x, mouse.y - Q.y) < 15) {
+                if (Math.hypot(mouse.x - A.x, mouse.y - A.y) < 15 || Math.hypot(mouse.x - B.x, mouse.y - B.y) < 15) {
                     canvas.style.cursor = 'pointer';
                 } else {
                     canvas.style.cursor = 'default';
@@ -314,7 +180,156 @@
             draw();
         });
 
-        // Inicializar o desenho
+        // --- LÓGICA MATEMÁTICA ---
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const h_mm = parseFloat(slider.value);
+            const d_mm = 65; // Base fixa de acordo com a prova
+
+            const dist_px = Math.hypot(B.x - A.x, B.y - A.y);
+            const scale = dist_px / d_mm;
+            const angle_AB = Math.atan2(B.y - A.y, B.x - A.x);
+
+            statusList.innerHTML = '';
+
+            // 1. Círculo de Apolônio (Razão k = 2)
+            // Distância do centro de Apolônio até A ao longo da reta: d_mm * k^2 / (k^2 - 1) = d_mm * 4/3
+            // Raio de Apolônio: d_mm * k / (k^2 - 1) = d_mm * 2/3
+            const C_x = A.x + Math.cos(angle_AB) * dist_px * (4/3);
+            const C_y = A.y + Math.sin(angle_AB) * dist_px * (4/3);
+            const R_ap = dist_px * (2/3);
+
+            ctx.beginPath();
+            ctx.arc(C_x, C_y, R_ap, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(31, 119, 180, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(31, 119, 180, 0.08)';
+            ctx.fill();
+
+            // 2. Círculo Auxiliar de Altura (Raio h)
+            const R_h = h_mm * scale;
+
+            ctx.beginPath();
+            ctx.arc(A.x, A.y, R_h, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(128, 128, 128, 0.8)';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([5, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            if (h_mm >= d_mm) {
+                statusList.innerHTML = `<span style="color: red;">❌ Erro: A altura (h) precisa ser menor que a base (AB) para tangenciar de B.</span>`;
+                drawControlPoint(A, 'A', '#333');
+                drawControlPoint(B, 'B', '#333');
+                return;
+            }
+
+            // 3. Retas Tangentes (Do ponto B à circunferência auxiliar)
+            const theta = Math.asin(h_mm / d_mm);
+            const alpha1 = angle_AB + Math.PI - theta;
+            const alpha2 = angle_AB + Math.PI + theta;
+
+            const lineLen = Math.max(canvas.width, canvas.height) * 2;
+            ctx.strokeStyle = '#ff7f0e';
+            ctx.lineWidth = 1.5;
+            
+            // Desenhar as duas retas completas
+            ctx.beginPath();
+            ctx.moveTo(B.x - Math.cos(alpha1)*lineLen, B.y - Math.sin(alpha1)*lineLen);
+            ctx.lineTo(B.x + Math.cos(alpha1)*lineLen, B.y + Math.sin(alpha1)*lineLen);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(B.x - Math.cos(alpha2)*lineLen, B.y - Math.sin(alpha2)*lineLen);
+            ctx.lineTo(B.x + Math.cos(alpha2)*lineLen, B.y + Math.sin(alpha2)*lineLen);
+            ctx.stroke();
+
+            // 4. Calcular Interseções entre as Tangentes e o Círculo de Apolônio
+            let intersections = [];
+            let sol_count = 0;
+
+            [alpha1, alpha2].forEach(alpha => {
+                const dx = B.x - C_x;
+                const dy = B.y - C_y;
+                const a = 1;
+                const b = 2 * (dx * Math.cos(alpha) + dy * Math.sin(alpha));
+                const c = dx*dx + dy*dy - R_ap*R_ap;
+                const delta = b*b - 4*a*c;
+
+                if (delta >= 0) {
+                    const t1 = (-b + Math.sqrt(delta)) / 2;
+                    const t2 = (-b - Math.sqrt(delta)) / 2;
+                    intersections.push({ x: B.x + t1*Math.cos(alpha), y: B.y + t1*Math.sin(alpha) });
+                    if (delta > 0) {
+                        intersections.push({ x: B.x + t2*Math.cos(alpha), y: B.y + t2*Math.sin(alpha) });
+                    }
+                }
+            });
+
+            // 5. Desenhar Vértices C e Triângulos Resolvidos
+            if (intersections.length > 0) {
+                intersections.forEach((pt, idx) => {
+                    sol_count++;
+                    
+                    // Sombreamento do Triângulo Solução
+                    ctx.beginPath();
+                    ctx.moveTo(A.x, A.y);
+                    ctx.lineTo(B.x, B.y);
+                    ctx.lineTo(pt.x, pt.y);
+                    ctx.closePath();
+                    ctx.fillStyle = 'rgba(255, 0, 0, 0.05)';
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.2)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+
+                    // Ponto C
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
+                    ctx.fillStyle = 'red';
+                    ctx.fill();
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#000';
+                    ctx.font = 'bold 13px Arial';
+                    ctx.fillText('C' + (idx+1), pt.x + 8, pt.y + 12);
+                });
+                statusList.innerHTML = `<span style="color: green;">🟢 Sucesso: Foram encontradas ${sol_count} soluções reais (vértices C).</span>`;
+            } else {
+                statusList.innerHTML = `<span style="color: red;">❌ Sem interseção: O círculo e as tangentes não se cruzam com essa configuração de h.</span>`;
+            }
+
+            // Segmento Principal AB
+            ctx.beginPath();
+            ctx.moveTo(A.x, A.y);
+            ctx.lineTo(B.x, B.y);
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            drawControlPoint(A, 'A', '#333');
+            drawControlPoint(B, 'B', '#333');
+        }
+
+        function drawControlPoint(pt, label, color) {
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, 8, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 15px Arial';
+            ctx.fillText(label, pt.x - 6, pt.y - 12);
+        }
+
+        // Inicia a cena
         draw();
     </script>
 </body>
